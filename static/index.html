@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7f3" />
+    <title>Aroha · Product Quality Check</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/validation.css" />
+    <link rel="stylesheet" href="/static/presentation-alignment.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="Aroha home">
+          <img class="brand-logo" src="/static/aroha_logo.jpeg" alt="Aroha logo" />
+        </a>
+        <div class="workspace-label">QUALITY SYSTEMS</div>
+        <nav class="nav-list" aria-label="Main navigation">
+          <a class="nav-item active" href="/"><span class="nav-icon">◈</span> Quality check <span class="nav-current"></span></a>
+          <a class="nav-item muted" href="#overview"><span class="nav-icon">▦</span> Model overview</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="system-card">
+            <span class="pulse"></span>
+            <div><strong>Model ready</strong><small>SECOM classifier</small></div>
+          </div>
+          <div class="sidebar-foot">INTERNAL TOOL <span>·</span> V 0.1</div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb">Manufacturing <span>/</span> <strong>Product quality</strong></div>
+          <div class="topbar-right"><span class="live-dot"></span><span>Local workspace</span><span class="avatar">P</span></div>
+        </header>
+
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> PRODUCTION INTELLIGENCE</div>
+            <h1>Product quality<br /><em>check</em></h1>
+            <p class="subtitle">Screen a production run using its process sensor readings.</p>
+          </div>
+          <div class="heading-stamp"><span class="stamp-icon">✳</span><span>SECOM<br />CLASSIFIER</span></div>
+        </section>
+
+        <section class="content-grid">
+          <div class="left-column">
+            <section class="panel upload-panel" aria-labelledby="upload-title">
+              <div class="panel-heading">
+                <div class="step-index">01</div>
+                <div><div class="section-kicker">INPUT DATA</div><h2 id="upload-title">Add sensor readings</h2></div>
+                <span class="required-pill">590 FEATURES</span>
+              </div>
+
+              <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose a CSV file with one or more sensor rows">
+                <input id="file-input" type="file" accept=".csv,text/csv" hidden />
+                <div class="upload-icon"><span>↑</span></div>
+                <div class="drop-title">Drop your CSV here <span>or browse</span></div>
+                <div class="drop-copy">One production item per row · 590 sensor columns</div>
+                <div id="file-chip" class="file-chip" hidden><span class="file-symbol">▤</span><span id="file-name"></span><button id="remove-file" type="button" aria-label="Remove file">×</button></div>
+              </div>
+
+              <div class="upload-meta">
+                <div class="format-hint"><span class="hint-icon">i</span><span>CSV may include a header row. Blank sensor values use training-set medians.</span></div>
+                <a class="template-link" href="/api/template.csv">Download template <span>↗</span></a>
+              </div>
+
+              <div class="divider"><span>BEFORE YOU RUN</span></div>
+              <div class="checklist">
+                <div><span class="checkmark">✓</span><span>One item per row</span></div>
+                <div><span class="checkmark">✓</span><span>Keep the sensor order unchanged</span></div>
+                <div><span class="checkmark">✓</span><span>Use numeric process measurements</span></div>
+              </div>
+
+              <div id="error-message" class="error-message" role="alert" hidden></div>
+              <button id="predict-button" class="primary-button" type="button" disabled>
+                <span>Run quality checks</span><span class="button-arrow">→</span>
+              </button>
+              <div class="privacy-note"><span class="lock-icon">⌑</span> Readings are processed locally by this app.</div>
+            </section>
+
+            <section id="overview" class="model-strip">
+              <div class="model-icon">◉</div>
+              <div class="model-copy"><span class="section-kicker">MODEL</span><strong>Random Forest</strong><small id="model-detail">Loading model details…</small></div>
+              <a href="/docs" target="_blank" rel="noreferrer">API docs <span>↗</span></a>
+            </section>
+            <div class="validation-warning"><span class="warning-symbol">!</span><span><strong>Evaluation caveat</strong><small id="validation-detail">Loading holdout performance…</small></span></div>
+          </div>
+
+          <div class="right-column">
+            <section id="result-card" class="panel result-panel empty-state" aria-live="polite">
+              <div class="panel-heading result-heading">
+                <div class="step-index">02</div>
+                <div><div class="section-kicker">INSPECTION RESULT</div><h2>Quality assessment</h2></div>
+                <span id="result-status" class="status-pill">AWAITING INPUT</span>
+              </div>
+              <div id="empty-result" class="empty-result">
+                <div class="radar-art"><span class="radar-ring ring-one"></span><span class="radar-ring ring-two"></span><span class="radar-ring ring-three"></span><span class="radar-center">✳</span><span class="radar-sweep"></span></div>
+                <h3>Ready when you are</h3>
+                <p>Upload one or more sensor records to see predicted outcomes and model scores.</p>
+                <div class="empty-caption"><span class="live-dot"></span> MODEL STANDING BY</div>
+              </div>
+              <div id="result-content" hidden>
+                <div id="batch-summary" class="batch-summary" aria-live="polite"></div>
+                <div class="batch-table-wrap">
+                  <table class="batch-table">
+                    <thead><tr><th>Record</th><th>Prediction</th><th>Model confidence</th><th>Pass</th><th>Fail</th></tr></thead>
+                    <tbody id="batch-results"></tbody>
+                  </table>
+                </div>
+                <div class="sensor-block">
+                  <div class="sensor-head"><div><span class="section-kicker">FEATURE IMPORTANCE · GLOBAL</span><h3>Top 10 influential features</h3></div><span class="info-circle" title="Global feature importance from the trained Random Forest">i</span></div>
+                  <div id="sensor-list" class="sensor-list"></div>
+                  <div class="importance-note">Importance is model-wide; it does not explain an individual prediction.</div>
+                </div>
+                <div class="result-note"><span>ⓘ</span><span>This is a screening estimate based on the SECOM dataset. Confirm critical quality decisions with your established inspection process.</span></div>
+              </div>
+            </section>
+            <div class="footnote"><span class="footnote-mark">✳</span><span>Designed to support earlier quality signals.<br /><strong>Human inspection remains the final decision.</strong></span></div>
+          </div>
+        </section>
+        <footer class="page-footer"><span>AROHA</span><span>QUALITY PREDICTION <i>·</i> SECOM DATASET</span></footer>
+      </main>
+    </div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

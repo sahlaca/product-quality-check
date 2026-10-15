@@ -1,0 +1,83 @@
+{
+  "evaluation": "stratified 80/20 holdout; preprocessing and SMOTE fitted on training rows only",
+  "rows": 1567,
+  "input_feature_count": 590,
+  "selected_feature_count": 474,
+  "model_training_rows": 1253,
+  "test_rows": 314,
+  "test_failures": 21,
+  "test_passes": 293,
+  "accuracy": 0.9331210191082803,
+  "balanced_accuracy": 0.5221030391678856,
+  "roc_auc_for_fail": 0.7140419307654803,
+  "roc_auc_positive_class": "Fail (mapped class 0)",
+  "confusion_matrix_labels_0_fail_1_pass": [
+    [
+      1,
+      20
+    ],
+    [
+      1,
+      292
+    ]
+  ],
+  "classification_report": {
+    "fail": {
+      "precision": 0.5,
+      "recall": 0.047619047619047616,
+      "f1-score": 0.08695652173913043,
+      "support": 21.0
+    },
+    "pass": {
+      "precision": 0.9358974358974359,
+      "recall": 0.9965870307167235,
+      "f1-score": 0.9652892561983472,
+      "support": 293.0
+    },
+    "accuracy": 0.9331210191082803,
+    "macro avg": {
+      "precision": 0.717948717948718,
+      "recall": 0.5221030391678856,
+      "f1-score": 0.5261228889687388,
+      "support": 314.0
+    },
+    "weighted avg": {
+      "precision": 0.9067450596113017,
+      "recall": 0.9331210191082803,
+      "f1-score": 0.9065472580338773,
+      "support": 314.0
+    }
+  },
+  "repeated_stratified_cv": {
+    "method": "5-fold stratified CV repeated 5 times",
+    "fold_count": 25,
+    "rows_used": 1253,
+    "mean": {
+      "accuracy": 0.9334438247011952,
+      "balanced_accuracy": 0.5098686525892409,
+      "fail_recall": 0.021617647058823533,
+      "pass_recall": 0.9981196581196582,
+      "roc_auc_for_fail": 0.7462754524886879
+    },
+    "standard_deviation": {
+      "accuracy": 0.004353573694225142,
+      "balanced_accuracy": 0.019177636824469737,
+      "fail_recall": 0.03847609879883086,
+      "pass_recall": 0.003282540917892556,
+      "roc_auc_for_fail": 0.06459461057920009
+    },
+    "aggregate_confusion_matrix_labels_0_fail_1_pass": [
+      [
+        9,
+        406
+      ],
+      [
+        11,
+        5839
+      ]
+    ],
+    "aggregate_predictions": 6265,
+    "test_failures_per_fold_min": 16,
+    "test_failures_per_fold_max": 17
+  }
+}
