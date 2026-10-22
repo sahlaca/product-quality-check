@@ -84,10 +84,12 @@ function renderResult(batch) {
   document.querySelector("#result-content").hidden = false;
   const results = batch.results;
   const failCount = batch.predicted_fail_count;
+  const warningCount = batch.predicted_warning_count;
   const passCount = batch.predicted_pass_count;
   document.querySelector("#result-status").textContent = `${batch.record_count} RECORD${batch.record_count === 1 ? "" : "S"} CHECKED`;
-  document.querySelector("#result-status").className = `status-pill ${failCount ? "fail" : "success"}`;
-  document.querySelector("#batch-summary").textContent = `${batch.record_count} record${batch.record_count === 1 ? "" : "s"} processed · ${passCount} predicted Pass · ${failCount} predicted Fail`;
+  const overallStatus = failCount ? "fail" : warningCount ? "warning" : "success";
+  document.querySelector("#result-status").className = `status-pill ${overallStatus}`;
+  document.querySelector("#batch-summary").textContent = `${batch.record_count} record${batch.record_count === 1 ? "" : "s"} processed · ${passCount} Pass · ${warningCount} Warning · ${failCount} Fail`;
   const tableBody = document.querySelector("#batch-results");
   tableBody.replaceChildren();
   results.forEach((result, index) => {
@@ -95,7 +97,7 @@ function renderResult(batch) {
     const values = [
       `Record ${index + 1}`,
       result.prediction,
-      `${(result.model_confidence * 100).toFixed(2)}% (${result.prediction})`,
+      `${(result.model_confidence * 100).toFixed(2)}% (${result.most_likely_class} score)`,
       `${(result.pass_probability * 100).toFixed(2)}%`,
       `${(result.defect_probability * 100).toFixed(2)}%`,
     ];
@@ -166,13 +168,7 @@ fetch("/api/model-info")
   .then((response) => response.json())
   .then((info) => {
     document.querySelector("#model-detail").textContent = `${info.selected_feature_count} active sensors · ${info.training_rows.toLocaleString()} training records`;
-    const recall = info.cv_failure_recall_mean;
-    const spread = info.cv_failure_recall_std;
-    document.querySelector("#validation-detail").textContent = recall == null
-      ? "Repeated cross-validation results are unavailable."
-      : `Repeated cross-validation detected ${(recall * 100).toFixed(1)}% ± ${(spread * 100).toFixed(1)}% of failures. Treat predictions as experimental.`;
   })
   .catch(() => {
     document.querySelector("#model-detail").textContent = "Model information unavailable";
-    document.querySelector("#validation-detail").textContent = "Could not load cross-validation results.";
   });

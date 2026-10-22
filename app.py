@@ -16,13 +16,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 
+WARNING_FAIL_SCORE = 0.25
+FAIL_FAIL_SCORE = 0.50
+
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 MODEL_PATH = ROOT / "secom_quality_model.pkl"
 
 app = FastAPI(
     title="Product Quality Check",
-    description="Predict SECOM manufacturing pass/fail outcomes from sensor readings.",
+    description="Screen SECOM manufacturing records using sensor readings and Pass/Fail class scores.",
     version="0.1.0",
 )
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -142,7 +145,6 @@ def predict_records(records: list[list[Optional[float]]]) -> list[dict]:
     selected = values[:, np.asarray(BUNDLE["feature_indices"], dtype=int)]
     scaled = BUNDLE["scaler"].transform(selected)
     model = BUNDLE["model"]
-    predicted_classes = model.predict(scaled).astype(int)
     class_to_column = {int(label): index for index, label in enumerate(model.classes_)}
     probabilities = model.predict_proba(scaled)
 
@@ -160,13 +162,21 @@ def predict_records(records: list[list[Optional[float]]]) -> list[dict]:
         ]
 
     results = []
-    for predicted_class, row_probabilities in zip(predicted_classes, probabilities):
+    for row_probabilities in probabilities:
         fail_probability = float(row_probabilities[class_to_column[0]])
         pass_probability = float(row_probabilities[class_to_column[1]])
-        confidence = float(row_probabilities[class_to_column[int(predicted_class)]])
+        most_likely_class = "Fail" if fail_probability >= pass_probability else "Pass"
+        confidence = max(fail_probability, pass_probability)
+        if fail_probability >= FAIL_FAIL_SCORE:
+            prediction = "Fail"
+        elif fail_probability >= WARNING_FAIL_SCORE:
+            prediction = "Warning"
+        else:
+            prediction = "Pass"
         results.append({
-            "prediction": "Fail" if predicted_class == 0 else "Pass",
+            "prediction": prediction,
             "model_confidence": round(confidence, 6),
+            "most_likely_class": most_likely_class,
             "defect_probability": round(fail_probability, 6),
             "pass_probability": round(pass_probability, 6),
             "top_influential_features": top_features,
@@ -184,13 +194,16 @@ def predict(request: PredictionRequest) -> dict:
 def predict_batch(request: BatchPredictionRequest) -> dict:
     results = predict_records(request.records)
     failed = sum(result["prediction"] == "Fail" for result in results)
+    warned = sum(result["prediction"] == "Warning" for result in results)
+    passed = sum(result["prediction"] == "Pass" for result in results)
     top_features = results[0]["top_influential_features"]
     for result in results:
         result.pop("top_influential_features", None)
     return {
         "record_count": len(results),
         "predicted_fail_count": failed,
-        "predicted_pass_count": len(results) - failed,
+        "predicted_warning_count": warned,
+        "predicted_pass_count": passed,
         "top_influential_features": top_features,
         "results": results,
     }

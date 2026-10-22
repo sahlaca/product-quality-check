@@ -88,7 +88,7 @@
               <div class="model-copy"><span class="section-kicker">MODEL</span><strong>Random Forest</strong><small id="model-detail">Loading model details…</small></div>
               <a href="/docs" target="_blank" rel="noreferrer">API docs <span>↗</span></a>
             </section>
-            <div class="validation-warning"><span class="warning-symbol">!</span><span><strong>Evaluation caveat</strong><small id="validation-detail">Loading holdout performance…</small></span></div>
+            <div class="validation-warning"><span class="warning-symbol">i</span><span><strong>POC using public SECOM sample data</strong><small>This demonstrates a quality-screening workflow and has not been validated on a production line. Use results as review signals and keep established inspections in place.</small></span></div>
           </div>
 
           <div class="right-column">
@@ -117,7 +117,7 @@
                   <div id="sensor-list" class="sensor-list"></div>
                   <div class="importance-note">Importance is model-wide; it does not explain an individual prediction.</div>
                 </div>
-                <div class="result-note"><span>ⓘ</span><span>This is a screening estimate based on the SECOM dataset. Confirm critical quality decisions with your established inspection process.</span></div>
+                <div class="result-note"><span>ⓘ</span><span>Fail score ≥50%: Fail · 25% to &lt;50%: Warning · &lt;25%: Pass. Model confidence is the higher of the model's Pass and Fail scores.</span></div>
               </div>
             </section>
             <div class="footnote"><span class="footnote-mark">✳</span><span>Designed to support earlier quality signals.<br /><strong>Human inspection remains the final decision.</strong></span></div>
